@@ -1,0 +1,48 @@
+// PostgreSQL Schema for VERCEL + SUPABASE DEPLOYMENT
+// Rename this file to schema.prisma when deploying to Vercel
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model Issue {
+  id                 String   @id
+  title              String
+  description        String   @default("")
+  severity           String   @default("medium")
+  status             String   @default("open")
+  type               String   @default("bug")
+  screen             String
+  stepsToReproduce   String   @default("[]")
+  expectedBehavior   String   @default("")
+  actualBehavior     String   @default("")
+  environment        String   @default("Production")
+  device             String   @default("")
+  osVersion          String   @default("")
+  appVersion         String   @default("")
+  reportedBy         String   @default("")
+  assignedTo         String   @default("")
+  notes              String   @default("")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  screenshots        IssueScreenshot[]
+}
+
+model IssueScreenshot {
+  id          String   @id @default(cuid())
+  issueId     String
+  name        String
+  data        String
+  type        String
+  size        Int
+  uploadedAt  DateTime @default(now())
+  
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+}
